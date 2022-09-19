@@ -21,5 +21,11 @@ namespace Mango.Web.Controllers
                 list = JsonConvert.DeserializeObject<List<ProductDto>>(Convert.ToString(response.Result));
             return View(list);
         }
+
+        public async Task<IActionResult> ProductCreate()
+        {
+            
+            return View();
+        }
     }
 }
