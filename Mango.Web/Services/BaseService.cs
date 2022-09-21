@@ -1,6 +1,7 @@
 ﻿using Mango.Web.Models;
 using Mango.Web.Services.IServices;
 using Newtonsoft.Json;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json.Serialization;
 
@@ -34,6 +35,11 @@ namespace Mango.Web.Services
                         Encoding.UTF8, "application/json");
                 }
 
+                if (!string.IsNullOrEmpty(apiRequest.AccessToken))
+                {
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiRequest.AccessToken);
+                }
+
                 HttpResponseMessage apiResponse = null;
                 switch (apiRequest.ApiType)
                 {
@@ -41,10 +47,10 @@ namespace Mango.Web.Services
                         message.Method = HttpMethod.Post;
                         break;
                     case SD.ApiType.PUT:
-                        message.Method = HttpMethod.Post;
+                        message.Method = HttpMethod.Put;
                         break;
                     case SD.ApiType.DELETE:
-                        message.Method = HttpMethod.Post;
+                        message.Method = HttpMethod.Delete;
                         break;
                     default :
                         message.Method = HttpMethod.Get;
