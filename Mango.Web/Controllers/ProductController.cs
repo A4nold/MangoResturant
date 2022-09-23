@@ -74,7 +74,6 @@ namespace Mango.Web.Controllers
         }
 
 
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> ProductDelete(int productId)
         {
             var accessToken = await HttpContext.GetTokenAsync("access_token");
