@@ -15,5 +15,7 @@ namespace Mango.Services.ShoppingCartAPI.Models
 
         [ForeignKey("ProductId")]
         public virtual Product Product { get; set; }
+
+        public int Count { get; set; }
     }
 }
