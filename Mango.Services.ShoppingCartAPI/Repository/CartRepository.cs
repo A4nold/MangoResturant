@@ -19,7 +19,15 @@ namespace Mango.Services.ShoppingCartAPI.Repository
 
         public async Task<bool> ClearCart(string userId)
         {
-            throw new NotImplementedException();
+            var cartHeaderFromDb = await _db.CartHeaders.FirstOrDefaultAsync(u => u.UserId == userId);
+            if (cartHeaderFromDb != null)
+            {
+                _db.CartDetails.RemoveRange(_db.CartDetails.Where(u => u.CartHeaderId == cartHeaderFromDb.CartHeaderId));
+                _db.CartHeaders.Remove(cartHeaderFromDb);
+                await _db.SaveChangesAsync();
+                return true;
+            }
+            return false;
         }
 
         public async Task<CartDto> CreateUpdateCart(CartDto cartDto)
@@ -78,12 +86,39 @@ namespace Mango.Services.ShoppingCartAPI.Repository
 
         public async Task<CartDto> GetCartByUserId(string userId)
         {
-            throw new NotImplementedException();
+            var cart = new Cart
+            {
+                CartHeader = await _db.CartHeaders.FirstOrDefaultAsync(u => u.UserId == userId)
+            };
+
+            cart.CartDetails = _db.CartDetails.Where(u => u.CartHeaderId == cart.CartHeader.CartHeaderId).Include(u => u.Product);
+
+            return _mapper.Map<CartDto>(cart);
         }
 
         public async Task<bool> RemoveFromCart(int cartDetailsId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                CartDetails cartDetails = await _db.CartDetails.FirstOrDefaultAsync(u => u.CartDetailsId == cartDetailsId);
+
+                int totalCountOfItemsInCart = _db.CartDetails.Where(u => u.CartHeaderId == cartDetails.CartHeaderId).Count();
+
+                if (totalCountOfItemsInCart == 1)
+                {
+                    var cartHeadersToRemove = await _db.CartHeaders.FirstOrDefaultAsync(u => u.CartHeaderId == cartDetails.CartHeaderId);
+
+                    _db.CartHeaders.Remove(cartHeadersToRemove);
+                }
+                await _db.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception)
+            {
+
+                return false;
+            }
+            
         }
     }
 }
