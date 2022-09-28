@@ -1,5 +1,4 @@
-﻿using Mango.Service.ProductAPI.Models.dto;
-using Mango.Services.ShoppingCartAPI.Models.Dto;
+﻿using Mango.Services.ShoppingCartAPI.Models.Dto;
 using Mango.Services.ShoppingCartAPI.Repository;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,10 +11,10 @@ namespace Mango.Services.ShoppingCartAPI.Controllers
         private readonly ICartRepository _cartRepository;
         protected ResponseDto _response;
 
-        public CartController(ICartRepository cartRepository, ResponseDto response)
+        public CartController(ICartRepository cartRepository)
         {
             _cartRepository = cartRepository;
-            _response = response;   
+            this._response = new ResponseDto();
         }
 
         [HttpGet("GetCart/{userId}")]
@@ -38,6 +37,7 @@ namespace Mango.Services.ShoppingCartAPI.Controllers
         [HttpPost("AddCart")]
         public async Task<object> AddCart(CartDto cartDto)
         {
+            Console.WriteLine("entered here");
             try
             {
                 CartDto cartDt = await _cartRepository.CreateUpdateCart(cartDto);
@@ -45,7 +45,7 @@ namespace Mango.Services.ShoppingCartAPI.Controllers
             }
             catch (Exception ex)
             {
-
+                
                 _response.IsSuccess = false;
                 _response.ErrorMessages = new List<string>() { ex.Message };
             }
