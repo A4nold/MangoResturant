@@ -35,7 +35,8 @@ namespace Mango.Services.ShoppingCartAPI.Repository
             // check if product is in db if not create it
             Cart cart = _mapper.Map<Cart>(cartDto);
 
-            var prodInDb = await _db.Products.FirstOrDefaultAsync(u => u.ProductId == cartDto.CartDetails.FirstOrDefault().ProductId);
+            var prodInDb = await _db.Products
+                .FirstOrDefaultAsync(u => u.ProductId == cartDto.CartDetails.FirstOrDefault().ProductId);
             if (prodInDb == null)
             {
                 _db.Products.Add(cart.CartDetails.FirstOrDefault().Product);
@@ -43,7 +44,8 @@ namespace Mango.Services.ShoppingCartAPI.Repository
             }
 
             //check if header is null
-            var cartHeaderFromDb = await _db.CartHeaders.AsNoTracking().FirstOrDefaultAsync(u => u.UserId == cart.CartHeader.UserId);
+            var cartHeaderFromDb = await _db.CartHeaders.AsNoTracking()
+                .FirstOrDefaultAsync(u => u.UserId == cart.CartHeader.UserId);
 
             if (cartHeaderFromDb == null)
             {
