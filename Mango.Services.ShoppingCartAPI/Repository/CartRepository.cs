@@ -32,16 +32,18 @@ namespace Mango.Services.ShoppingCartAPI.Repository
 
         public async Task<CartDto> CreateUpdateCart(CartDto cartDto)
         {
-            // check if product is in db if not create it
             Cart cart = _mapper.Map<Cart>(cartDto);
 
+            //check if product exists in database, if not create it!
             var prodInDb = await _db.Products
-                .FirstOrDefaultAsync(u => u.ProductId == cartDto.CartDetails.FirstOrDefault().ProductId);
+                .FirstOrDefaultAsync(u => u.ProductId == cartDto.CartDetails.FirstOrDefault()
+                .ProductId);
             if (prodInDb == null)
             {
                 _db.Products.Add(cart.CartDetails.FirstOrDefault().Product);
                 await _db.SaveChangesAsync();
             }
+
 
             //check if header is null
             var cartHeaderFromDb = await _db.CartHeaders.AsNoTracking()
@@ -51,7 +53,7 @@ namespace Mango.Services.ShoppingCartAPI.Repository
             {
                 //create header and details
                 _db.CartHeaders.Add(cart.CartHeader);
-                //await _db.SaveChangesAsync();
+                await _db.SaveChangesAsync();
                 cart.CartDetails.FirstOrDefault().CartHeaderId = cart.CartHeader.CartHeaderId;
                 cart.CartDetails.FirstOrDefault().Product = null;
                 _db.CartDetails.Add(cart.CartDetails.FirstOrDefault());
@@ -60,14 +62,14 @@ namespace Mango.Services.ShoppingCartAPI.Repository
             else
             {
                 //if header is not null
-                //check if details have the same product
-                var cartDetailsFromDb = await _db.CartDetails.AsNoTracking()
-                    .FirstOrDefaultAsync(u => u.ProductId == cart.CartDetails.FirstOrDefault().ProductId &&
-                u.CartHeaderId == cartHeaderFromDb.CartHeaderId);
+                //check if details has same product
+                var cartDetailsFromDb = await _db.CartDetails.AsNoTracking().FirstOrDefaultAsync(
+                    u => u.ProductId == cart.CartDetails.FirstOrDefault().ProductId &&
+                    u.CartHeaderId == cartHeaderFromDb.CartHeaderId);
 
-                if(cartDetailsFromDb == null)
+                if (cartDetailsFromDb == null)
                 {
-                    //create deatils
+                    //create details
                     cart.CartDetails.FirstOrDefault().CartHeaderId = cartHeaderFromDb.CartHeaderId;
                     cart.CartDetails.FirstOrDefault().Product = null;
                     _db.CartDetails.Add(cart.CartDetails.FirstOrDefault());
@@ -86,7 +88,7 @@ namespace Mango.Services.ShoppingCartAPI.Repository
             }
 
             return _mapper.Map<CartDto>(cart);
-            
+
         }
 
         public async Task<CartDto> GetCartByUserId(string userId)

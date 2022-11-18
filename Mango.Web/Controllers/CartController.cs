@@ -28,7 +28,7 @@ namespace Mango.Web.Controllers
             var response = await _cartService.GetCartByUserIdAsync<ResponseDto>(userId, accessToken);
 
             CartDto cartDto = new();
-            if (response != null)
+            if (response != null && response.IsSuccess)
             {
                 cartDto = JsonConvert.DeserializeObject<CartDto>(Convert.ToString(response.Result));
             }
